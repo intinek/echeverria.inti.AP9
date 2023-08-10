@@ -2,8 +2,11 @@ package com.mindhub.homebanking1;
 
 import com.mindhub.homebanking1.models.Account;
 import com.mindhub.homebanking1.models.Client;
+import com.mindhub.homebanking1.models.Transaction;
+import com.mindhub.homebanking1.models.TransactionType;
 import com.mindhub.homebanking1.repositories.AccountRepository;
 import com.mindhub.homebanking1.repositories.ClientRepository;
+import com.mindhub.homebanking1.repositories.TransactionRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,7 +22,7 @@ public class Homebanking1Application {
 	}
 
 	@Bean
-	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository){
+	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository, TransactionRepository transactionRepository){
 			return (args)->{
 
 
@@ -40,6 +43,16 @@ public class Homebanking1Application {
 				Account account3 = new Account(client2, "VIN003",LocalDate.now().plusDays(1), 7000);
 				client2.addAccount(account3);
 				accountRepository.save(account3);
+
+				Transaction transaction1 = new Transaction(account1, TransactionType.DEBITO, -80.000,"Transferecia",LocalDate.now());
+				account1.addTransaction(transaction1);
+				transactionRepository.save(transaction1);
+				Transaction transaction2 = new Transaction(account2, TransactionType.CREDITO, 200.000,"Deposito",LocalDate.now());
+				account2.addTransaction(transaction2);
+				transactionRepository.save(transaction2);
+
+
+
 			};
 	}
 
