@@ -18,7 +18,7 @@ public class Homebanking1Application {
 	}
 
 	@Bean
-	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository, TransactionRepository transactionRepository, LoanRepository loanRepository, ClientLoanRepository clientLoanRepository){
+	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository, TransactionRepository transactionRepository, LoanRepository loanRepository, ClientLoanRepository clientLoanRepository, CardRepository cardRepository){
 			return (args)->{
 
 
@@ -64,6 +64,18 @@ public class Homebanking1Application {
 				clientLoanRepository.save(Inti1);
 				ClientLoan Inti2 = new ClientLoan(200000.0, List.of(36), client2, Automotriz);
 				clientLoanRepository.save(Inti2);
+
+
+				Card Card1 = new Card(client1, client1.toString(), CardType.DEBIT, CardColor.GOLD,
+						"6332-4252-3545-1224", 242, LocalDate.now(), LocalDate.now().plusYears(5));
+				cardRepository.save(Card1);
+				Card Card2 = new Card(client1, client1.toString(), CardType.CREDIT, CardColor.TITANIUM,
+						"5824-1321-8574-0247", 367, LocalDate.now(), LocalDate.now().plusYears(5));
+				cardRepository.save(Card2);
+
+				Card Card3 = new Card(client1, client1.toString(), CardType.CREDIT, CardColor.SILVER,
+						"2454-0445.4004-8844", 248, LocalDate.now(), LocalDate.now().plusYears(5));
+				cardRepository.save(Card3);
 
 
 
