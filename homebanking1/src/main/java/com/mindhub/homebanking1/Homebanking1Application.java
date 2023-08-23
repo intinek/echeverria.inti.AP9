@@ -2,19 +2,23 @@ package com.mindhub.homebanking1;
 
 import com.mindhub.homebanking1.models.*;
 import com.mindhub.homebanking1.repositories.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @SpringBootApplication
 public class Homebanking1Application {
-
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 	public static void main(String[] args) {
 		SpringApplication.run(Homebanking1Application.class, args);
+
 	}
 
 	@Bean
@@ -22,11 +26,14 @@ public class Homebanking1Application {
 			return (args)->{
 
 
-				Client client1 = new Client("Melba", "Morel", "melba@mindhub.com");
+				Client client1 = new Client("Melba", "Morel", "melba@mindhub.com", passwordEncoder.encode("111"));
 				clientRepository.save(client1);
 
-				Client client2 = new Client("Inti", "Echeverria", "inti@mindhub.com");
+				Client client2 = new Client("Inti", "Echeverria", "inti@mindhub.com", passwordEncoder.encode("222"));
 				clientRepository.save(client2);
+
+				Client clientAdmin = new Client("Nahuel", "Echeverria", "nahuel@mindhub.com", passwordEncoder.encode("333"));
+				clientRepository.save(clientAdmin);
 
 				Account account1 = new Account( client1, "VIN001",LocalDate.now(), 4000);
 				accountRepository.save(account1);
@@ -56,13 +63,21 @@ public class Homebanking1Application {
 				loanRepository.save(Automotriz);
 
 
-				ClientLoan Melba1 = new ClientLoan(400000.0, List.of(60), client1, Hipotecario);
+				ClientLoan Melba1 = new ClientLoan(400000.0,60);
+				client1.addClientLoan(Melba1);
+				Hipotecario.addClientLoan(Melba1);
 				clientLoanRepository.save(Melba1);
-				ClientLoan Melba2 = new ClientLoan(50000.0, List.of(12),client1, Personal);
+				ClientLoan Melba2 = new ClientLoan(50000.0,12);
+				client1.addClientLoan(Melba2);
+				Personal.addClientLoan(Melba2);
 				clientLoanRepository.save(Melba2);
-				ClientLoan Inti1 = new ClientLoan(100000.0, List.of(24), client2, Personal);
+				ClientLoan Inti1 = new ClientLoan(100000.0,24);
+				client2.addClientLoan(Inti1);
+				Automotriz.addClientLoan(Inti1);
 				clientLoanRepository.save(Inti1);
-				ClientLoan Inti2 = new ClientLoan(200000.0, List.of(36), client2, Automotriz);
+				ClientLoan Inti2 = new ClientLoan(200000.0,36);
+				client2.addClientLoan(Inti2);
+				Personal.addClientLoan(Inti2);
 				clientLoanRepository.save(Inti2);
 
 
