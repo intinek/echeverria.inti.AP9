@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Random;
 
 @SpringBootApplication
 public class Homebanking1Application {
@@ -18,6 +19,8 @@ public class Homebanking1Application {
 	private PasswordEncoder passwordEncoder;
 	public static void main(String[] args) {
 		SpringApplication.run(Homebanking1Application.class, args);
+
+		System.out.println("Cvv generado: " + generationCvv());
 
 	}
 
@@ -35,15 +38,15 @@ public class Homebanking1Application {
 				Client clientAdmin = new Client("Nahuel", "Echeverria", "nahuel@mindhub.com", passwordEncoder.encode("333"));
 				clientRepository.save(clientAdmin);
 
-				Account account1 = new Account( client1, "VIN001",LocalDate.now(), 4000);
+				Account account1 = new Account( "VIN001",LocalDate.now(), 4000);
 				accountRepository.save(account1);
 
-				Account account2 = new Account(client1, "VIN002",LocalDate.now().plusDays(1), 8000);
+				Account account2 = new Account( "VIN002",LocalDate.now().plusDays(1), 8000);
 				client1.addAccount(account2);
 				accountRepository.save(account2);
 
 
-				Account account3 = new Account(client2, "VIN003",LocalDate.now().plusDays(1), 7000);
+				Account account3 = new Account( "VIN003",LocalDate.now().plusDays(1), 7000);
 				client2.addAccount(account3);
 				accountRepository.save(account3);
 
@@ -81,21 +84,29 @@ public class Homebanking1Application {
 				clientLoanRepository.save(Inti2);
 
 
-				Card Card1 = new Card(client1, client1.toString(), CardType.DEBIT, CardColor.GOLD,
-						"6332-4252-3545-1224", 242, LocalDate.now(), LocalDate.now().plusYears(5));
+				Card Card1 = new Card( client1.toString(), CardType.DEBIT, CardColor.GOLD,
+						"6332-4252-3545-1224", generationCvv(), LocalDate.now(), LocalDate.now().plusYears(5));
+				client1.addCard(Card1);
 				cardRepository.save(Card1);
-				Card Card2 = new Card(client1, client1.toString(), CardType.CREDIT, CardColor.TITANIUM,
-						"5824-1321-8574-0247", 367, LocalDate.now(), LocalDate.now().plusYears(5));
+				Card Card2 = new Card( client1.toString(), CardType.CREDIT, CardColor.TITANIUM,
+						"5824-1321-8574-0247", generationCvv(), LocalDate.now(), LocalDate.now().plusYears(5));
+				client1.addCard(Card2);
 				cardRepository.save(Card2);
 
-				Card Card3 = new Card(client1, client1.toString(), CardType.CREDIT, CardColor.SILVER,
-						"2454-0445.4004-8844", 248, LocalDate.now(), LocalDate.now().plusYears(5));
+				Card Card3 = new Card( client1.toString(), CardType.CREDIT, CardColor.SILVER,
+						"2454-0445.4004-8844", generationCvv(), LocalDate.now(), LocalDate.now().plusYears(5));
+				client1.addCard(Card3);
 				cardRepository.save(Card3);
 
 
 
 
 			};
+	}
+	public static int generationCvv(){
+		Random random = new Random();
+		int cvv = random.nextInt(900)+100;
+		return cvv;
 	}
 
 }
