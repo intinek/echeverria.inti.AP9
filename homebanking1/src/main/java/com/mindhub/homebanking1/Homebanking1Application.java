@@ -39,6 +39,7 @@ public class Homebanking1Application {
 				clientRepository.save(clientAdmin);
 
 				Account account1 = new Account( "VIN001",LocalDate.now(), 4000);
+				client1.addAccount(account1);
 				accountRepository.save(account1);
 
 				Account account2 = new Account( "VIN002",LocalDate.now().plusDays(1), 8000);
@@ -50,10 +51,10 @@ public class Homebanking1Application {
 				client2.addAccount(account3);
 				accountRepository.save(account3);
 
-				Transaction transaction1 = new Transaction(account1, TransactionType.DEBIT, -80.000,"Transferecia",LocalDate.now());
+				Transaction transaction1 = new Transaction(TransactionType.DEBIT, -80.000,"Transferecia");
 				account1.addTransaction(transaction1);
 				transactionRepository.save(transaction1);
-				Transaction transaction2 = new Transaction(account2, TransactionType.CREDIT, 200.000,"Deposito",LocalDate.now());
+				Transaction transaction2 = new Transaction(TransactionType.CREDIT, 200.000,"Deposito");
 				account2.addTransaction(transaction2);
 				transactionRepository.save(transaction2);
 

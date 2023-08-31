@@ -74,7 +74,7 @@ public class CardController {
         Card card = new Card(client.getFirstName(), cardType, cardColor, numberCard, randomCvvNumber, LocalDate.now(), LocalDate.now().plusYears(5));
         client.addCard(card);
         cardRepository.save(card);
-        return new ResponseEntity<>("Account created succesfully", HttpStatus.CREATED);
+        return new ResponseEntity<>("Account created", HttpStatus.CREATED);
     }
 
 }

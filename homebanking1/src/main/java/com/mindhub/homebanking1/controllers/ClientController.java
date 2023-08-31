@@ -18,26 +18,28 @@ import java.util.Random;
 
 import static java.util.stream.Collectors.toList;
 
+
 @RestController
 @RequestMapping("/api")
 public class ClientController {
 
     @Autowired
     private ClientRepository clientRepository;
-    @GetMapping("/clients")
-    public List<ClientDTO> getClients(){
-        return clientRepository.findAll()
 
+
+    @GetMapping("/clients")
+    public List<ClientDTO> getClients() {
+        return clientRepository.findAll()
                 .stream()
                 .map(currentClient -> new ClientDTO(currentClient))
                 .collect(toList());
-
     }
 
     @GetMapping("/clients/{id}")
-    public ClientDTO getClientById(@PathVariable Long id){
+    public ClientDTO getClientById(@PathVariable Long id) {
         return new ClientDTO(clientRepository.findById(id).get());
     }
+
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -45,9 +47,12 @@ public class ClientController {
     @Autowired
     private AccountRepository accountRepository;
     @PostMapping("/clients")
-    public ResponseEntity<Object> register(
-            @RequestParam String firstName, @RequestParam String lastName,
-            @RequestParam String email, @RequestParam String password) {
+    public ResponseEntity<Object> register(@RequestParam String firstName,
+                                           @RequestParam String lastName,
+                                           @RequestParam String email,
+                                           @RequestParam String password) {
+
+
         if (firstName.isBlank() || lastName.isBlank() || email.isBlank() || password.isBlank()) {
             return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
         }
@@ -75,7 +80,7 @@ public class ClientController {
 
     @GetMapping("/clients/current")
     public ClientDTO getClientCurrentAll(Authentication authentication){
-        return  new ClientDTO (clientRepository.findByEmail(authentication.getName()));
+        return  new ClientDTO(clientRepository.findByEmail(authentication.getName()));
 
 
     }

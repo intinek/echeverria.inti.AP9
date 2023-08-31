@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
+
+
+import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/api")
@@ -28,7 +30,7 @@ public class AccountController {
         List<AccountDTO> converterList = allAccounts
                 .stream()
                 .map(currentAccount -> new AccountDTO(currentAccount))
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return converterList;
 
@@ -54,7 +56,7 @@ public class AccountController {
             AccountDTO accountDTO = new AccountDTO(account);
             return new ResponseEntity<>(accountDTO, HttpStatus.ACCEPTED);
         } else {
-            return new ResponseEntity<>("This Account not is your, Im sorry", HttpStatus.I_AM_A_TEAPOT);
+            return new ResponseEntity<>("This Account is not yours", HttpStatus.I_AM_A_TEAPOT);
         }
 
     }
@@ -67,7 +69,7 @@ public class AccountController {
         allAccounts = clientAuth.getAccounts();
 
         if (allAccounts.size() >= 3)
-            return new ResponseEntity<>("you have three accounts, you can't create more, sorry", HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>("you have three accounts, you can't create more", HttpStatus.FORBIDDEN);
         else {
 
             String numberAccount;
@@ -80,6 +82,11 @@ public class AccountController {
             return new ResponseEntity<>("New account created", HttpStatus.CREATED );
         }
 
+    }
+    @GetMapping("/clients/current/accounts")
+    public List<AccountDTO> getCurrentAccounts(Authentication authentication){
+        Client client = clientRepository.findByEmail(authentication.getName());
+        return client.getAccounts().stream().map(AccountDTO::new).collect(toList());
     }
 
 
