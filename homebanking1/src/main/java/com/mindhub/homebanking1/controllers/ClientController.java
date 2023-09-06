@@ -5,6 +5,8 @@ import com.mindhub.homebanking1.models.Account;
 import com.mindhub.homebanking1.models.Client;
 import com.mindhub.homebanking1.repositories.AccountRepository;
 import com.mindhub.homebanking1.repositories.ClientRepository;
+import com.mindhub.homebanking1.services.AccountService;
+import com.mindhub.homebanking1.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,29 +25,36 @@ import static java.util.stream.Collectors.toList;
 @RequestMapping("/api")
 public class ClientController {
 
+
     @Autowired
-    private ClientRepository clientRepository;
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ClientService clientService;
+
+    @Autowired
+    private AccountService accountService;
 
 
     @GetMapping("/clients")
     public List<ClientDTO> getClients() {
-        return clientRepository.findAll()
-                .stream()
-                .map(currentClient -> new ClientDTO(currentClient))
-                .collect(toList());
+
+        return clientService.getClients();
     }
 
     @GetMapping("/clients/{id}")
     public ClientDTO getClientById(@PathVariable Long id) {
-        return new ClientDTO(clientRepository.findById(id).get());
+        return clientService.getClientById(id);
     }
 
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+    @GetMapping("/clients/current")
+    public ClientDTO getClientCurrentAll(Authentication authentication){
+        return clientService.getClientCurrentAll(authentication.getName());
 
-    @Autowired
-    private AccountRepository accountRepository;
+
+    }
+
     @PostMapping("/clients")
     public ResponseEntity<Object> register(@RequestParam String firstName,
                                            @RequestParam String lastName,
@@ -57,33 +66,29 @@ public class ClientController {
             return new ResponseEntity<>("Missing data", HttpStatus.FORBIDDEN);
         }
 
-        if (clientRepository.findByEmail(email) !=  null) {
+        if (clientService.findByEmail(email) !=  null) {
             return new ResponseEntity<>("Email already in use", HttpStatus.FORBIDDEN);
         }else{
             Client client = new Client(firstName, lastName, email, passwordEncoder.encode(password));
 
             String numAccount;
 
+
             do {
                 Random random = new Random();
                 numAccount = "VIN-" + random.nextInt(90000000);
-            } while (accountRepository.findByNumber(numAccount) != null);
+            } while (accountService.findByNumber(numAccount) != null);
 
             Account account = new Account(numAccount, LocalDate.now(), 0.0);
             client.addAccount(account);
-            clientRepository.save(client);
-            accountRepository.save(account);
+            clientService.clientAdd(client);
+            accountService.accountSave(account);
         }
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 
-    @GetMapping("/clients/current")
-    public ClientDTO getClientCurrentAll(Authentication authentication){
-        return  new ClientDTO(clientRepository.findByEmail(authentication.getName()));
 
-
-    }
 
 }
 

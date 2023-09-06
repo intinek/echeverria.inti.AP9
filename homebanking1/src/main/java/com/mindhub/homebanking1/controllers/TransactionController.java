@@ -8,6 +8,9 @@ import com.mindhub.homebanking1.models.TransactionType;
 import com.mindhub.homebanking1.repositories.AccountRepository;
 import com.mindhub.homebanking1.repositories.ClientRepository;
 import com.mindhub.homebanking1.repositories.TransactionRepository;
+import com.mindhub.homebanking1.services.AccountService;
+import com.mindhub.homebanking1.services.ClientService;
+import com.mindhub.homebanking1.services.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +24,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class TransactionController {
-    @Autowired
-    ClientRepository clientRepository;
 
     @Autowired
-    AccountRepository accountRepository;
+    private TransactionService transactionService;
 
     @Autowired
-    TransactionRepository transactionRepository;
+    private ClientService clientService;
+
+    @Autowired
+    private AccountService accountService;
+
 
 
     @Transactional
@@ -39,9 +44,9 @@ public class TransactionController {
                                                     @RequestParam Double amount,
                                                     @RequestParam String description) {
 
-        Account rootAccount = accountRepository.findByNumber(fromAccountNumber);
-        Account destinationAccount = accountRepository.findByNumber(toAccountNumber);
-        Client client = clientRepository.findByEmail(authentication.getName());
+        Account rootAccount = accountService.findByNumber(fromAccountNumber);
+        Account destinationAccount = accountService.findByNumber(toAccountNumber);
+        Client client = clientService.findByEmail(authentication.getName());
 
 
         if (fromAccountNumber.isBlank() || toAccountNumber.isBlank() || description.isBlank()) {
@@ -69,20 +74,22 @@ public class TransactionController {
             return new ResponseEntity<>("you don't have enough balance", HttpStatus.FORBIDDEN);
         }
 
+
         String descripRootAccount = description + " " + toAccountNumber;
-        Transaction rootAccountTransaction = transactionRepository.save(new Transaction(TransactionType.DEBIT, -amount, descripRootAccount));
+        Transaction rootAccountTransaction = new Transaction(TransactionType.DEBIT, -amount, descripRootAccount);
         rootAccount.addTransaction(rootAccountTransaction);
-        transactionRepository.save(rootAccountTransaction);
+        transactionService.transactionSave(rootAccountTransaction);
 
         String descripDestinationAccount = description + " " + fromAccountNumber;
-        Transaction destinationAccountTransaction = transactionRepository.save(new Transaction(TransactionType.CREDIT, amount, descripDestinationAccount));
+        Transaction destinationAccountTransaction = new Transaction(TransactionType.CREDIT, amount, descripDestinationAccount);
         destinationAccount.addTransaction(destinationAccountTransaction);
-        transactionRepository.save(destinationAccountTransaction);
+        transactionService.transactionSave(destinationAccountTransaction);
 
-
-        accountRepository.save(rootAccount);
-        accountRepository.save(destinationAccount);
+        accountService.accountSave(rootAccount);
+        accountService.accountSave(destinationAccount);
         return new ResponseEntity<>("Successful transfer", HttpStatus.CREATED);
     }
+
+
 
 }

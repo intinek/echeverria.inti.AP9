@@ -7,6 +7,8 @@ import com.mindhub.homebanking1.models.CardType;
 import com.mindhub.homebanking1.models.Client;
 import com.mindhub.homebanking1.repositories.CardRepository;
 import com.mindhub.homebanking1.repositories.ClientRepository;
+import com.mindhub.homebanking1.services.CardService;
+import com.mindhub.homebanking1.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,23 +24,26 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api")
 public class CardController {
+
     @Autowired
-    ClientRepository clientRepository;
+    private CardService cardService;
+
     @Autowired
-    CardRepository cardRepository;
+    private ClientService clientService;
+
 
     @GetMapping("/cards")
     public List<CardDTO> getCards() {
-        return cardRepository.findAll().stream()
-                .map(currentCard -> new CardDTO(currentCard))
-                .collect(Collectors.toList());
+        return cardService.getCards();
 
     }
+
+
     @PostMapping("/clients/current/cards")
     public ResponseEntity<Object> createCard (Authentication authentication,
                                               @RequestParam CardType cardType,
                                               @RequestParam CardColor cardColor) {
-        Client client = clientRepository.findByEmail(authentication.getName());
+        Client client = clientService.findByEmail(authentication.getName());
 
         if (cardType == null || cardColor == null) {
             return new ResponseEntity<>("Missing data", HttpStatus.NO_CONTENT);
@@ -61,20 +66,20 @@ public class CardController {
                 return new ResponseEntity<>("Color already used", HttpStatus.BAD_REQUEST);
             }
         }
-
-
         String numberCard;
         do {
             Random random = new Random();
             numberCard = random.nextInt(9999) + " " + random.nextInt(9999) + " " + random.nextInt(9999) + " " + random.nextInt(9999);
-        } while (cardRepository.findCardByNumber(numberCard) != null);
+        }
+        while (cardService.findCardByNumber(numberCard) != null);
         int randomCvvNumber = new Random().nextInt(1000);
-
-
         Card card = new Card(client.getFirstName(), cardType, cardColor, numberCard, randomCvvNumber, LocalDate.now(), LocalDate.now().plusYears(5));
         client.addCard(card);
-        cardRepository.save(card);
+        cardService.cardSave(card);
         return new ResponseEntity<>("Account created", HttpStatus.CREATED);
     }
+
+
+
 
 }
