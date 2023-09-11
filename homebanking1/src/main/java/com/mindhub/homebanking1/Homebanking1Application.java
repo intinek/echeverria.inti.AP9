@@ -15,16 +15,15 @@ import java.util.Random;
 
 @SpringBootApplication
 public class Homebanking1Application {
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	// @Autowired
+	// private PasswordEncoder passwordEncoder;
 	public static void main(String[] args) {
 		SpringApplication.run(Homebanking1Application.class, args);
 
-		System.out.println("Cvv generado: " + generationCvv());
 
 	}
 
-	@Bean
+	/* @Bean
 	public CommandLineRunner initData(ClientRepository clientRepository, AccountRepository accountRepository, TransactionRepository transactionRepository, LoanRepository loanRepository, ClientLoanRepository clientLoanRepository, CardRepository cardRepository){
 			return (args)->{
 
@@ -103,11 +102,8 @@ public class Homebanking1Application {
 
 
 			};
-	}
-	public static int generationCvv(){
-		Random random = new Random();
-		int cvv = random.nextInt(900)+100;
-		return cvv;
-	}
+
+
+	} */
 
 }

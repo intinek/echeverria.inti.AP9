@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel>
-      <module name="homebanking1.homebanking1.main~1" target="11" />
-      <module name="homebanking1.homebanking1.test~1" target="11" />
+      <module name="homebanking1.homebanking1.main" target="11" />
+      <module name="homebanking1.homebanking1.test" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
