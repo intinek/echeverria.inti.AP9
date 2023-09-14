@@ -3,10 +3,9 @@ package com.mindhub.homebanking1.controllers;
 import com.mindhub.homebanking1.dtos.ClientDTO;
 import com.mindhub.homebanking1.models.Account;
 import com.mindhub.homebanking1.models.Client;
-import com.mindhub.homebanking1.repositories.AccountRepository;
-import com.mindhub.homebanking1.repositories.ClientRepository;
 import com.mindhub.homebanking1.services.AccountService;
 import com.mindhub.homebanking1.services.ClientService;
+import com.mindhub.homebanking1.utils.CardUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +15,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Random;
-
-import static java.util.stream.Collectors.toList;
 
 
 @RestController
@@ -75,8 +71,7 @@ public class ClientController {
 
 
             do {
-                Random random = new Random();
-                numAccount = "VIN-" + random.nextInt(90000000);
+                numAccount = CardUtils.generateRandomVIN();
             } while (accountService.findByNumber(numAccount) != null);
 
             Account account = new Account(numAccount, LocalDate.now(), 0.0);
